@@ -9,7 +9,7 @@ SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
 SET transaction_timeout = 0;
-SET client_encoding = 'LATIN1';
+SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
@@ -28,22 +28,47 @@ SET default_table_access_method = heap;
 CREATE TABLE public.products (
     released timestamp without time zone,
     bigid text,
-    skuid text,
     name text,
     type text,
-    genre text,
     developer text,
-    publisher text
+    publisher text,
+    category text,
+    categories text[],
+    optimized text[],
+    compatible text[],
+    attributes jsonb
 );
 
 
 ALTER TABLE public.products OWNER TO eugene;
 
 --
--- Name: products_bigid_skuid_idx; Type: INDEX; Schema: public; Owner: eugene
+-- Name: skus; Type: TABLE; Schema: public; Owner: eugene
 --
 
-CREATE UNIQUE INDEX products_bigid_skuid_idx ON public.products USING btree (bigid, skuid);
+CREATE TABLE public.skus (
+    bigid text,
+    skuid text,
+    skuname text,
+    skutype text,
+    bundledskus jsonb
+);
+
+
+ALTER TABLE public.skus OWNER TO eugene;
+
+--
+-- Name: products_bigid_idx; Type: INDEX; Schema: public; Owner: eugene
+--
+
+CREATE UNIQUE INDEX products_bigid_idx ON public.products USING btree (bigid);
+
+
+--
+-- Name: skus_bigid_skuid_idx; Type: INDEX; Schema: public; Owner: eugene
+--
+
+CREATE UNIQUE INDEX skus_bigid_skuid_idx ON public.skus USING btree (bigid, skuid);
 
 
 --
