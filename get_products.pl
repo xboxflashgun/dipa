@@ -102,6 +102,8 @@ sub get_info {
 		my @compatible = $pr->{Properties}->{XboxConsoleGenCompatible};
 		my $attributes = $pr->{Properties}->{Attributes};
 
+		$released = '2000-01-01'	if( !defined($released) || $released eq '' );
+
 		$dbh->do('
 			insert into products(released,bigid,name,type,developer,publisher,category,categories,optimized,compatible,attributes,relatedprods) 
 				values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) on conflict(bigid) do update
