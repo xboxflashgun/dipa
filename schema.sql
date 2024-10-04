@@ -36,7 +36,8 @@ CREATE TABLE public.products (
     categories text[],
     optimized text[],
     compatible text[],
-    attributes jsonb
+    attributes jsonb,
+    relatedprods jsonb
 );
 
 
