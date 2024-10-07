@@ -21,13 +21,14 @@ $coder = Cpanel::JSON::XS->new->allow_nonref;
 
 get_channels();
 
+read_x360bc();
+
 read_prod_info();
 
 # get_info("9MW581HCJPM6");		# Evil West
 # get_info("9MTLKM2DJMZ2");		# Forza Horizon 5 Premium Edition
 
 # New products scan
-
 print "New products scan:\n"	if $DEBUG;
 
 while( $dbh->do("
@@ -45,6 +46,22 @@ while( $dbh->do("
 $dbh->disconnect;
 
 #######################
+
+sub read_x360bc	{
+
+	print " * Reading Xbox360 backward compatibility list\n"	if $DEBUG;
+
+	my $json = $ua->get("https://settings.data.microsoft.com/settings/v2.0/xbox/backcompatcatalogidmapall?scenarioid=all")->result->json;
+
+	$dbh->begin_work;
+	foreach $row (keys %{$json->{settings}}) {
+
+		$dbh->do('insert into bc360list(legacyid,bingid) values($1,$2) on conflict(legacyid) do update set bingid=$2', undef, $row, $json->{settings}{$row});
+
+	}
+	$dbh->commit;
+
+}
 
 sub read_prod_info {
 

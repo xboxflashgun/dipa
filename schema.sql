@@ -22,6 +22,36 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: bc360list; Type: TABLE; Schema: public; Owner: eugene
+--
+
+CREATE TABLE public.bc360list (
+    legacyid uuid NOT NULL,
+    bingid uuid
+);
+
+
+ALTER TABLE public.bc360list OWNER TO eugene;
+
+--
+-- Name: prices; Type: TABLE; Schema: public; Owner: eugene
+--
+
+CREATE TABLE public.prices (
+    stdate timestamp without time zone,
+    enddate timestamp without time zone,
+    msrp double precision,
+    listprice double precision,
+    bigid text,
+    skuid text,
+    region text,
+    remid text
+);
+
+
+ALTER TABLE public.prices OWNER TO eugene;
+
+--
 -- Name: products; Type: TABLE; Schema: public; Owner: eugene
 --
 
@@ -57,6 +87,21 @@ CREATE TABLE public.skus (
 
 
 ALTER TABLE public.skus OWNER TO eugene;
+
+--
+-- Name: bc360list bc360list_pkey; Type: CONSTRAINT; Schema: public; Owner: eugene
+--
+
+ALTER TABLE ONLY public.bc360list
+    ADD CONSTRAINT bc360list_pkey PRIMARY KEY (legacyid);
+
+
+--
+-- Name: prices_bigid_skuid_region_remid_stdate_idx; Type: INDEX; Schema: public; Owner: eugene
+--
+
+CREATE UNIQUE INDEX prices_bigid_skuid_region_remid_stdate_idx ON public.prices USING btree (bigid, skuid, region, remid, stdate);
+
 
 --
 -- Name: products_bigid_idx; Type: INDEX; Schema: public; Owner: eugene
