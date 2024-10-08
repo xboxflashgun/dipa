@@ -18,4 +18,11 @@ Updates prices for selected regions in parallel
 
 This is PostgreSQL schema for "dipa" database
 
+## crontab example
+
+```
+07	6,18	*	*	*	./dipa/get_products.pl
+0	0,12	*	*	*	./dipa/run-priceupdate.sh
+```
+
 
