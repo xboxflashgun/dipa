@@ -11,7 +11,9 @@ use Data::Dumper;
 use utf8;
 
 $|++;
-# my $DEBUG = 1;
+my $DEBUG = 1;
+my %bc;		# backward compatibility hash
+
 
 my $dbh = DBI->connect("dbi:Pg:dbname=dipa") || die;
 my $ua = Mojo::UserAgent->new;
@@ -27,6 +29,8 @@ read_prod_info();
 
 # get_info("9MW581HCJPM6");		# Evil West
 # get_info("9MTLKM2DJMZ2");		# Forza Horizon 5 Premium Edition
+# get_info("CFQ7TTC0P85B,CFQ7TTC0HX8W,CFQ7TTC0QH5H,CFQ7TTC0KGQ8,CFQ7TTC0KHS0");
+
 
 # New products scan
 print "New products scan:\n"	if $DEBUG;
@@ -57,6 +61,7 @@ sub read_x360bc	{
 	foreach $row (keys %{$json->{settings}}) {
 
 		$dbh->do('insert into bc360list(legacyid,bingid) values($1,$2) on conflict(legacyid) do update set bingid=$2', undef, $row, $json->{settings}{$row});
+		$bc{lc($row)} = lc($json->{settings}{$row});
 
 	}
 	$dbh->commit;
@@ -65,7 +70,7 @@ sub read_x360bc	{
 
 sub read_prod_info {
 
-	my @all = map { $_ -> [0] } $dbh->selectall_array("select bigid from products group by 1 order by random()");
+	my @all = map { $_ -> [0] } $dbh->selectall_array("select bigid from products order by random()");
 
 	while( my @slice = splice(@all, 0, int(900+rand(98))) ) {
 
@@ -80,7 +85,7 @@ sub read_prod_info {
 
 sub read_new_prods {
 
-	my @all = map { $_ -> [0] } $dbh->selectall_array("select bigid from products where type is null group by 1 order by random()");
+	my @all = map { $_ -> [0] } $dbh->selectall_array("select bigid from products where type is null order by random()");
 
 	while( my @slice = splice(@all, 0, 997) ) {
 
@@ -120,17 +125,28 @@ sub get_info {
 		my $attributes = $pr->{Properties}->{Attributes};
 
 		$released = '2000-01-01'	if( !defined($released) || $released eq '' );
+		
+		# Xbox 360 backward compatibility flag
+		my $xbox360 = 0;
+		my @leg = grep { $_->{IdType} eq 'LegacyXboxProductId' } @{$pr->{AlternateIds}};
+		foreach $legid (@leg) {
+
+			$xbox360 = 1	if(defined($bc{$legid->{Value}}));
+
+		}
 
 		$dbh->do('
-			insert into products(released,bigid,name,type,developer,publisher,category,categories,optimized,compatible,attributes,relatedprods) 
-				values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) on conflict(bigid) do update
+			insert into products(released,bigid,name,type,developer,publisher,category,categories,optimized,compatible,attributes,relatedprods,xbox360) 
+				values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) on conflict(bigid) do update
 				set released=$1,name=$3,type=$4,developer=$5,publisher=$6,category=$7,categories=$8,optimized=$9,
-					compatible=$10,attributes=$11,relatedprods=$12', 
+					compatible=$10,attributes=$11,relatedprods=$12,xbox360=$13', 
 			undef,$released,$bigid,$name,$type,$developer,$publisher,$category,\@categories,\@optimized,\@compatible, 
-			$coder->encode($attributes), $coder->encode($relprods))
+			$coder->encode($attributes), $coder->encode($relprods),$xbox360)
 				|| die;
 
 
+		# Reading actual SKUs
+		$dbh->do('delete from skus where bigid=$1', undef, $bigid);
 		foreach $s (@{$pr->{DisplaySkuAvailabilities}}) {
 
 			my $sku = $s->{Sku};
@@ -138,9 +154,8 @@ sub get_info {
 			my $skutype = $sku->{SkuType};
 			my $skuname = $sku->{LocalizedProperties}->[0]->{SkuTitle};
 			my $bundled = $sku->{Properties}->{BundledSkus};
-			$dbh->do('insert into skus(bigid,skuid,skuname,skutype,bundledskus) values($1,$2,$3,$4,$5) on conflict(bigid,skuid) do update
-				set skuname=$3,skutype=$4,bundledskus=$5', undef, $bigid, $skuid, $skuname, $skutype, $coder->encode($bundled)) 
-					|| die;
+			$dbh->do('insert into skus(bigid,skuid,skuname,skutype,bundledskus) values($1,$2,$3,$4,$5)', undef, 
+				$bigid, $skuid, $skuname, $skutype, $coder->encode($bundled)) 	|| die;
 
 		}
 
