@@ -67,7 +67,8 @@ CREATE TABLE public.products (
     optimized text[],
     compatible text[],
     attributes jsonb,
-    relatedprods jsonb
+    relatedprods jsonb,
+    xbox360 boolean
 );
 
 
@@ -115,6 +116,20 @@ CREATE UNIQUE INDEX products_bigid_idx ON public.products USING btree (bigid);
 --
 
 CREATE UNIQUE INDEX skus_bigid_skuid_idx ON public.skus USING btree (bigid, skuid);
+
+
+--
+-- Name: prices prices_min_update; Type: TRIGGER; Schema: public; Owner: eugene
+--
+
+CREATE TRIGGER prices_min_update BEFORE UPDATE ON public.prices FOR EACH ROW EXECUTE FUNCTION suppress_redundant_updates_trigger();
+
+
+--
+-- Name: products products_min_update; Type: TRIGGER; Schema: public; Owner: eugene
+--
+
+CREATE TRIGGER products_min_update BEFORE UPDATE ON public.products FOR EACH ROW EXECUTE FUNCTION suppress_redundant_updates_trigger();
 
 
 --
