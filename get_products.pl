@@ -11,9 +11,8 @@ use Data::Dumper;
 use utf8;
 
 $|++;
-my $DEBUG = 1;
+# my $DEBUG = 1;
 my %bc;		# backward compatibility hash
-
 
 my $dbh = DBI->connect("dbi:Pg:dbname=dipa") || die;
 my $ua = Mojo::UserAgent->new;
