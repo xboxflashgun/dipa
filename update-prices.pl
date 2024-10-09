@@ -12,7 +12,7 @@ use Bytes::Random::Secure qw( random_bytes_base64 );
 use utf8;
 
 $|++;
-my $DEBUG = 1;
+# my $DEBUG = 1;
 my $MINBATCH = 900;			# 1..900
 
 # Correlation Vector: https://github.com/microsoft/CorrelationVector
