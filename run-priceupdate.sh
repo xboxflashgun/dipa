@@ -3,7 +3,7 @@
 cd $(dirname $0)
 
 for a in ca gb co jp kr us "fi" ar tr za; do 
-	./update-prices.pl &
+	./update-prices.pl $a &
 done
 
 wait

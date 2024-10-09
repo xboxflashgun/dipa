@@ -34,7 +34,7 @@ my $dbh = DBI->connect("dbi:Pg:dbname=dipa") || die;
 my $ua = Mojo::UserAgent->new;
 $ua->inactivity_timeout(300);
 
-$coder = Cpanel::JSON::XS->new->allow_nonref;
+# $coder = Cpanel::JSON::XS->new->allow_nonref;
 
 # reading bc list
 my %bc;
