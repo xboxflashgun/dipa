@@ -40,7 +40,7 @@ ALTER TABLE public.bc360list OWNER TO eugene;
 CREATE TABLE public.prices (
     stdate timestamp without time zone,
     enddate timestamp without time zone,
-    msrp double precision,
+    msrpp double precision,
     listprice double precision,
     bigid text,
     skuid text,
