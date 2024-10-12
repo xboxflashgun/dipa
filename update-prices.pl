@@ -67,6 +67,7 @@ sub get_prices {
 	foreach $pr (@{$json->{Products}}) {
 
 		my $bigid = $pr->{'ProductId'};
+		$dbh->do('delete from prices where bigid=$1 and region=$2', undef, $bigid, $market);
 
 		for $sku (@{$pr->{'DisplaySkuAvailabilities'}}) {
 
@@ -94,8 +95,9 @@ sub get_prices {
 
 					$remid = $av->{Remediations}->[0]->{BigId}	if( $av->{RemediationRequired} );
 
-					$dbh->do('insert into prices(bigid,skuid,region,remid,stdate,enddate,msrp,listprice) values($1,$2,$3,$4,$5,$6,$7,$8)
-						on conflict(bigid,skuid,region,remid,stdate) do update set enddate=$6,msrp=$7,listprice=$8', undef,
+					$dbh->do('insert into prices(bigid,skuid,region,remid,stdate,enddate,msrpp,listprice) values($1,$2,$3,$4,$5,$6,$7,$8)
+						on conflict(bigid,skuid,region,remid,stdate) do nothing', undef,
+						# on conflict(bigid,skuid,region,remid,stdate) do update set enddate=$6,msrpp=$7,listprice=$8', undef,
 						$bigid, $skuid, $market, $remid, $stdate, $enddate, $msrpp, $listp) || die;
 
 				}
