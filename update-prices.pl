@@ -100,6 +100,22 @@ sub get_prices {
 						# on conflict(bigid,skuid,region,remid,stdate) do update set enddate=$6,msrpp=$7,listprice=$8', undef,
 						$bigid, $skuid, $market, $remid, $stdate, $enddate, $msrpp, $listp) || die;
 
+					# update price history
+					my @last = $dbh->selectrow_array('select stdate,msrpp,listprice from pricehistory where bigid=$1 and skuid=$2 and region=$3 
+						and remid=$4 order by stdate limit 1', undef, $bigid, $skuid, $market, $remid);
+
+					if(scalar(@last) == 0 || $msrpp != $last[1] || $listp != $last[2]) {
+
+						$dbh->do('insert into pricehistory(stdate,bigid,skuid,region,remid,msrpp,listprice,ndays) values($1::timestamp,$2,$3,$4,$5,$6,$7,
+							extract(days from now()-$1))', undef, $stdate, $bigid, $skuid, $market, $remid, $msrpp, $listp) || die;
+
+					} else {
+
+						$dbh->do('update pricehistory set ndays=extract(days from now()-stdate) where bigid=$1 and skuid=$2 and region=$3 and remid=$4
+								and stdate=$5', undef, $bigid, $skuid, $market, $remid, $last[0]);
+
+					}
+
 				}
 
 			}
