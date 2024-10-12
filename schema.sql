@@ -34,6 +34,24 @@ CREATE TABLE public.bc360list (
 ALTER TABLE public.bc360list OWNER TO eugene;
 
 --
+-- Name: pricehistory; Type: TABLE; Schema: public; Owner: eugene
+--
+
+CREATE TABLE public.pricehistory (
+    stdate timestamp without time zone,
+    msrpp double precision,
+    listprice double precision,
+    ndays integer,
+    bigid text,
+    skuid text,
+    region text,
+    remid text
+);
+
+
+ALTER TABLE public.pricehistory OWNER TO eugene;
+
+--
 -- Name: prices; Type: TABLE; Schema: public; Owner: eugene
 --
 
@@ -95,6 +113,13 @@ ALTER TABLE public.skus OWNER TO eugene;
 
 ALTER TABLE ONLY public.bc360list
     ADD CONSTRAINT bc360list_pkey PRIMARY KEY (legacyid);
+
+
+--
+-- Name: pricehistory_stdate_bigid_skuid_region_remid_idx; Type: INDEX; Schema: public; Owner: eugene
+--
+
+CREATE UNIQUE INDEX pricehistory_stdate_bigid_skuid_region_remid_idx ON public.pricehistory USING btree (stdate, bigid, skuid, region, remid);
 
 
 --
