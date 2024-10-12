@@ -116,6 +116,13 @@ ALTER TABLE ONLY public.bc360list
 
 
 --
+-- Name: pricehistory_bigid_skuid_region_remid_idx; Type: INDEX; Schema: public; Owner: eugene
+--
+
+CREATE INDEX pricehistory_bigid_skuid_region_remid_idx ON public.pricehistory USING btree (bigid, skuid, region, remid);
+
+
+--
 -- Name: pricehistory_stdate_bigid_skuid_region_remid_idx; Type: INDEX; Schema: public; Owner: eugene
 --
 
