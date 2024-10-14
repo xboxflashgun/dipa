@@ -107,7 +107,7 @@ sub get_prices {
 					if(scalar(@last) == 0 || $msrpp != $last[1] || $listp != $last[2]) {
 
 						$dbh->do('insert into pricehistory(stdate,bigid,skuid,region,remid,msrpp,listprice,ndays) values($1::timestamp,$2,$3,$4,$5,$6,$7,
-							extract(days from now()-$1))', undef, $stdate, $bigid, $skuid, $market, $remid, $msrpp, $listp) || die;
+							extract(days from now()-$1)) on conflict do nothing', undef, $stdate, $bigid, $skuid, $market, $remid, $msrpp, $listp) || die;
 
 					} else {
 
