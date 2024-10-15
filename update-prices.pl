@@ -84,6 +84,7 @@ sub get_prices {
 				}
 				next if not defined $plt;
 
+				my $lastmod = $av->{LastModifiedDate};
 				my $msrpp = $av->{'OrderManagementData'}->{'Price'}->{'MSRP'};
 				my $listp = $av->{'OrderManagementData'}->{'Price'}->{'ListPrice'};
 
@@ -95,10 +96,9 @@ sub get_prices {
 
 					$remid = $av->{Remediations}->[0]->{BigId}	if( $av->{RemediationRequired} );
 
-					$dbh->do('insert into prices(bigid,skuid,region,remid,stdate,enddate,msrpp,listprice) values($1,$2,$3,$4,$5,$6,$7,$8)
+					$dbh->do('insert into prices(bigid,skuid,region,remid,stdate,enddate,msrpp,listprice,lastmodified) values($1,$2,$3,$4,$5,$6,$7,$8,$9)
 						on conflict(bigid,skuid,region,remid,stdate) do nothing', undef,
-						# on conflict(bigid,skuid,region,remid,stdate) do update set enddate=$6,msrpp=$7,listprice=$8', undef,
-						$bigid, $skuid, $market, $remid, $stdate, $enddate, $msrpp, $listp) || die;
+						$bigid, $skuid, $market, $remid, $stdate, $enddate, $msrpp, $listp, $lastmod) || die;
 
 					# update price history
 					my @last = $dbh->selectrow_array('select stdate,msrpp,listprice from pricehistory where bigid=$1 and skuid=$2 and region=$3 
