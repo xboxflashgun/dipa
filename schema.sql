@@ -63,7 +63,8 @@ CREATE TABLE public.prices (
     bigid text,
     skuid text,
     region text,
-    remid text
+    remid text,
+    lastmodified timestamp without time zone
 );
 
 
@@ -86,7 +87,8 @@ CREATE TABLE public.products (
     compatible text[],
     attributes jsonb,
     relatedprods jsonb,
-    xbox360 boolean
+    xbox360 boolean,
+    titleid bigint
 );
 
 
