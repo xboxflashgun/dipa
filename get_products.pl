@@ -20,16 +20,16 @@ $ua->inactivity_timeout(300);
 
 $coder = Cpanel::JSON::XS->new->allow_nonref;
 
+# get_info("9MW581HCJPM6");		# Evil West
+# get_info("9MTLKM2DJMZ2");		# Forza Horizon 5 Premium Edition
+# get_info("CFQ7TTC0P85B,CFQ7TTC0HX8W,CFQ7TTC0QH5H,CFQ7TTC0KGQ8,CFQ7TTC0KHS0");
+# get_info("BVZ4H08BMQ3H");	# Rockstar Table Tennis
+
 get_channels();
 
 read_x360bc();
 
 read_prod_info();
-
-# get_info("9MW581HCJPM6");		# Evil West
-# get_info("9MTLKM2DJMZ2");		# Forza Horizon 5 Premium Edition
-# get_info("CFQ7TTC0P85B,CFQ7TTC0HX8W,CFQ7TTC0QH5H,CFQ7TTC0KGQ8,CFQ7TTC0KHS0");
-
 
 # New products scan
 print "New products scan:\n"	if $DEBUG;
@@ -122,6 +122,8 @@ sub get_info {
 		my @optimized  = $pr->{Properties}->{XboxConsoleGenOptimized};
 		my @compatible = $pr->{Properties}->{XboxConsoleGenCompatible};
 		my $attributes = $pr->{Properties}->{Attributes};
+		my $titleid    = (grep { $_->{IdType} eq 'XboxTitleId' } @{$pr->{AlternateIds}})[0]->{Value}
+			if(grep { $_->{IdType} eq 'XboxTitleId' } @{$pr->{AlternateIds}});
 
 		$released = '2000-01-01'	if( !defined($released) || $released eq '' );
 		
@@ -135,12 +137,13 @@ sub get_info {
 		}
 
 		$dbh->do('
-			insert into products(released,bigid,name,type,developer,publisher,category,categories,optimized,compatible,attributes,relatedprods,xbox360) 
-				values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) on conflict(bigid) do update
+			insert into products(released,bigid,name,type,developer,publisher,category,categories,optimized,
+				compatible,attributes,relatedprods,xbox360,titleid) 
+				values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) on conflict(bigid) do update
 				set released=$1,name=$3,type=$4,developer=$5,publisher=$6,category=$7,categories=$8,optimized=$9,
-					compatible=$10,attributes=$11,relatedprods=$12,xbox360=$13', 
+					compatible=$10,attributes=$11,relatedprods=$12,xbox360=$13,titleid=$14', 
 			undef,$released,$bigid,$name,$type,$developer,$publisher,$category,\@categories,\@optimized,\@compatible, 
-			$coder->encode($attributes), $coder->encode($relprods),$xbox360)
+			$coder->encode($attributes), $coder->encode($relprods),$xbox360, $titleid)
 				|| die;
 
 
