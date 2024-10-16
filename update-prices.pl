@@ -50,6 +50,9 @@ while( my @slice = splice(@all, 0, int($MINBATCH + rand(98))) ) {
 
 }
 
+# remove expired prices
+$dbh->do('delete from prices where enddate < now() and region=$1', undef, $market);
+
 $dbh->disconnect;
 
 
