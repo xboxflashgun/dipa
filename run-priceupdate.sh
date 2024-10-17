@@ -2,7 +2,7 @@
 
 cd $(dirname $0)
 
-for a in ca gb co jp kr us "fi" ar tr za; do 
+for a in $(psql dipa -XAtc 'select code from countries'); do 
 	./update-prices.pl $a &
 done
 
