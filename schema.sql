@@ -22,7 +22,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: bc360list; Type: TABLE; Schema: public; Owner: eugene
+-- Name: bc360list; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.bc360list (
@@ -31,10 +31,8 @@ CREATE TABLE public.bc360list (
 );
 
 
-ALTER TABLE public.bc360list OWNER TO eugene;
-
 --
--- Name: countries; Type: TABLE; Schema: public; Owner: eugene
+-- Name: countries; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.countries (
@@ -44,10 +42,8 @@ CREATE TABLE public.countries (
 );
 
 
-ALTER TABLE public.countries OWNER TO eugene;
-
 --
--- Name: pricehistory; Type: TABLE; Schema: public; Owner: eugene
+-- Name: pricehistory; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.pricehistory (
@@ -62,10 +58,8 @@ CREATE TABLE public.pricehistory (
 );
 
 
-ALTER TABLE public.pricehistory OWNER TO eugene;
-
 --
--- Name: prices; Type: TABLE; Schema: public; Owner: eugene
+-- Name: prices; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.prices (
@@ -81,10 +75,8 @@ CREATE TABLE public.prices (
 );
 
 
-ALTER TABLE public.prices OWNER TO eugene;
-
 --
--- Name: products; Type: TABLE; Schema: public; Owner: eugene
+-- Name: products; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.products (
@@ -105,10 +97,8 @@ CREATE TABLE public.products (
 );
 
 
-ALTER TABLE public.products OWNER TO eugene;
-
 --
--- Name: skus; Type: TABLE; Schema: public; Owner: eugene
+-- Name: skus; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.skus (
@@ -120,10 +110,8 @@ CREATE TABLE public.skus (
 );
 
 
-ALTER TABLE public.skus OWNER TO eugene;
-
 --
--- Name: bc360list bc360list_pkey; Type: CONSTRAINT; Schema: public; Owner: eugene
+-- Name: bc360list bc360list_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.bc360list
@@ -131,7 +119,7 @@ ALTER TABLE ONLY public.bc360list
 
 
 --
--- Name: countries countries_pkey; Type: CONSTRAINT; Schema: public; Owner: eugene
+-- Name: countries countries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.countries
@@ -139,49 +127,49 @@ ALTER TABLE ONLY public.countries
 
 
 --
--- Name: pricehistory_bigid_skuid_region_remid_idx; Type: INDEX; Schema: public; Owner: eugene
+-- Name: pricehistory_bigid_skuid_region_remid_idx; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX pricehistory_bigid_skuid_region_remid_idx ON public.pricehistory USING btree (bigid, skuid, region, remid);
 
 
 --
--- Name: pricehistory_stdate_bigid_skuid_region_remid_idx; Type: INDEX; Schema: public; Owner: eugene
+-- Name: pricehistory_stdate_bigid_skuid_region_remid_idx; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX pricehistory_stdate_bigid_skuid_region_remid_idx ON public.pricehistory USING btree (stdate, bigid, skuid, region, remid);
 
 
 --
--- Name: prices_bigid_skuid_region_remid_stdate_idx; Type: INDEX; Schema: public; Owner: eugene
+-- Name: prices_bigid_skuid_region_remid_stdate_idx; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX prices_bigid_skuid_region_remid_stdate_idx ON public.prices USING btree (bigid, skuid, region, remid, stdate);
 
 
 --
--- Name: products_bigid_idx; Type: INDEX; Schema: public; Owner: eugene
+-- Name: products_bigid_idx; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX products_bigid_idx ON public.products USING btree (bigid);
 
 
 --
--- Name: skus_bigid_skuid_idx; Type: INDEX; Schema: public; Owner: eugene
+-- Name: skus_bigid_skuid_idx; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX skus_bigid_skuid_idx ON public.skus USING btree (bigid, skuid);
 
 
 --
--- Name: prices prices_min_update; Type: TRIGGER; Schema: public; Owner: eugene
+-- Name: prices prices_min_update; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER prices_min_update BEFORE UPDATE ON public.prices FOR EACH ROW EXECUTE FUNCTION suppress_redundant_updates_trigger();
 
 
 --
--- Name: products products_min_update; Type: TRIGGER; Schema: public; Owner: eugene
+-- Name: products products_min_update; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER products_min_update BEFORE UPDATE ON public.products FOR EACH ROW EXECUTE FUNCTION suppress_redundant_updates_trigger();
