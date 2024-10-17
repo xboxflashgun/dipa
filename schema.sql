@@ -34,6 +34,19 @@ CREATE TABLE public.bc360list (
 ALTER TABLE public.bc360list OWNER TO eugene;
 
 --
+-- Name: countries; Type: TABLE; Schema: public; Owner: eugene
+--
+
+CREATE TABLE public.countries (
+    code text NOT NULL,
+    name text,
+    cur text
+);
+
+
+ALTER TABLE public.countries OWNER TO eugene;
+
+--
 -- Name: pricehistory; Type: TABLE; Schema: public; Owner: eugene
 --
 
@@ -115,6 +128,14 @@ ALTER TABLE public.skus OWNER TO eugene;
 
 ALTER TABLE ONLY public.bc360list
     ADD CONSTRAINT bc360list_pkey PRIMARY KEY (legacyid);
+
+
+--
+-- Name: countries countries_pkey; Type: CONSTRAINT; Schema: public; Owner: eugene
+--
+
+ALTER TABLE ONLY public.countries
+    ADD CONSTRAINT countries_pkey PRIMARY KEY (code);
 
 
 --
