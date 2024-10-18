@@ -18,7 +18,7 @@ my $dbh = DBI->connect("dbi:Pg:dbname=dipa") || die;
 my $ua = Mojo::UserAgent->new;
 $ua->inactivity_timeout(300);
 
-$coder = Cpanel::JSON::XS->new->allow_nonref;
+my $coder = Cpanel::JSON::XS->new->allow_nonref;
 
 # get_info("9MW581HCJPM6");		# Evil West
 # get_info("9MTLKM2DJMZ2");		# Forza Horizon 5 Premium Edition
