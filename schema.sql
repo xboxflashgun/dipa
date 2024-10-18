@@ -43,6 +43,17 @@ CREATE TABLE public.countries (
 
 
 --
+-- Name: exrates; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.exrates (
+    exdate date,
+    cur text,
+    exrates jsonb
+);
+
+
+--
 -- Name: pricehistory; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -124,6 +135,13 @@ ALTER TABLE ONLY public.bc360list
 
 ALTER TABLE ONLY public.countries
     ADD CONSTRAINT countries_pkey PRIMARY KEY (code);
+
+
+--
+-- Name: exrates_exdate_region_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX exrates_exdate_region_idx ON public.exrates USING btree (exdate, cur);
 
 
 --
