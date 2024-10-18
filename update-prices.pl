@@ -53,6 +53,9 @@ while( my @slice = splice(@all, 0, int($MINBATCH + rand(98))) ) {
 # remove expired prices
 $dbh->do('delete from prices where enddate < now() and region=$1', undef, $market);
 
+# update "exrates" table with currency exchange rates
+update_exrates();
+
 $dbh->disconnect;
 
 
@@ -133,3 +136,51 @@ sub get_prices {
 
 }
 
+
+#############################################
+# https://github.com/fawazahmed0/exchange-api
+
+sub update_exrates {
+
+	my @curs  = $dbh->selectall_array("select distinct cur from countries order by cur");
+	foreach $c (@curs) {
+
+		my $cur = lc($c->[0]);
+		my @dates = $dbh->selectall_array('
+			select a::date 
+			from 
+				generate_series(
+					(select max(exdate) from exrates where cur=$1)::timestamp,
+					now(),
+					interval \'1 day\') a', undef, uc($cur));
+	
+		foreach $d (@dates) 	{
+
+			my $date = $d->[0];
+			get_exrate($date,$cur);
+			sleep 3;
+	
+		}
+	
+	}
+
+}
+
+sub get_exrate {
+
+	my ($date, $base) = @_;
+	$base = lc($base);
+
+	my $json = $ua->get("https://cdn.jsdelivr.net/npm/\@fawazahmed0/currency-api\@$date/v1/currencies/$base.json")->result->json;
+
+	if( ! defined($json) ) {
+
+		# Fallback
+		$json = $ua->get("https://$date.currency-api.pages.dev/v1/currencies/$base.json")->result->json;
+
+	}
+
+	die "Unable to get currency exchange rates" if not defined $json;
+	$dbh->do('insert into exrates(exdate,cur,exrates) values($1,$2,$3) on conflict(exdate,cur) do update set exrates=$3', undef, $date, uc($base), $coder->encode($json->{$base}));
+
+}
