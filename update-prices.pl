@@ -34,7 +34,7 @@ my $dbh = DBI->connect("dbi:Pg:dbname=dipa") || die;
 my $ua = Mojo::UserAgent->new;
 $ua->inactivity_timeout(300);
 
-# $coder = Cpanel::JSON::XS->new->allow_nonref;
+$coder = Cpanel::JSON::XS->new->allow_nonref;
 
 # reading bc list
 my %bc;
@@ -180,7 +180,7 @@ sub get_exrate {
 
 	}
 
-	die "Unable to get currency exchange rates" if not defined $json;
+	print "Warn: unable to get currency exchange rates for '$base' at $date\n" if not defined $json;
 	$dbh->do('insert into exrates(exdate,cur,exrates) values($1,$2,$3) on conflict(exdate,cur) do update set exrates=$3', undef, $date, uc($base), $coder->encode($json->{$base}));
 
 }
