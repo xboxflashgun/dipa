@@ -148,14 +148,30 @@ sub get_info {
 				|| die;
 
 		# Reading UsageData
+		my @oldusage = $dbh->selectall_array('select distinct usagedate,timespan,ratecnt,rating from usagedata where bigid=$1 order by usagedate',
+			undef, $bigid);
+		
+		my %rates;
+		my %cnts;
+		for $u (@oldusage) {
+
+			$rates{$u->[1]} = $u->[3];
+			$cnts{$u->[1]} = $u->[2];
+
+		}
+
 		foreach $mp (@{$pr->{MarketProperties}->[0]->{UsageData}}) {
 
 			my $timespan = $mp->{AggregateTimeSpan};
 			my $rating   = $mp->{AverageRating};
 			my $ratecnt  = $mp->{RatingCount};
 
-			$dbh->do('insert into usagedata(usagedate,bigid,timespan,rating,ratecnt) values(now()::date,$1,$2,$3,$4)
-				on conflict(usagedate,bigid,timespan) do update set rating=$3,ratecnt=$4', undef, $bigid, $timespan, $rating, $ratecnt);
+			if(not defined $rates{$timespan} or not defined $cnts{$timespan} or $rates{$timespan} != $rating or $cnts{$timespan} != $ratecnt) {
+
+				$dbh->do('insert into usagedata(usagedate,bigid,timespan,rating,ratecnt) values(now()::date,$1,$2,$3,$4)
+					on conflict(usagedate,bigid,timespan) do update set rating=$3,ratecnt=$4', undef, $bigid, $timespan, $rating, $ratecnt);
+
+			}
 
 		}
 
