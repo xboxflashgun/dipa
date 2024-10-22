@@ -193,10 +193,17 @@ CREATE UNIQUE INDEX skus_bigid_skuid_idx ON public.skus USING btree (bigid, skui
 
 
 --
--- Name: usagedata_usagedate_bigid_timespan_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: usagedata_bigid_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX usagedata_usagedate_bigid_timespan_idx ON public.usagedata USING btree (usagedate, bigid, timespan);
+CREATE INDEX usagedata_bigid_idx ON public.usagedata USING btree (bigid);
+
+
+--
+-- Name: usagedata_usagedate_bigid_timespan_idx1; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX usagedata_usagedate_bigid_timespan_idx1 ON public.usagedata USING btree (usagedate DESC, bigid, timespan);
 
 
 --
