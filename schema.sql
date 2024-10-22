@@ -122,6 +122,19 @@ CREATE TABLE public.skus (
 
 
 --
+-- Name: usagedata; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.usagedata (
+    rating double precision,
+    usagedate date,
+    ratecnt integer,
+    bigid text,
+    timespan text
+);
+
+
+--
 -- Name: bc360list bc360list_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -177,6 +190,13 @@ CREATE UNIQUE INDEX products_bigid_idx ON public.products USING btree (bigid);
 --
 
 CREATE UNIQUE INDEX skus_bigid_skuid_idx ON public.skus USING btree (bigid, skuid);
+
+
+--
+-- Name: usagedata_usagedate_bigid_timespan_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX usagedata_usagedate_bigid_timespan_idx ON public.usagedata USING btree (usagedate, bigid, timespan);
 
 
 --
