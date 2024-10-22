@@ -24,6 +24,7 @@ my $coder = Cpanel::JSON::XS->new->allow_nonref;
 # get_info("9MTLKM2DJMZ2");		# Forza Horizon 5 Premium Edition
 # get_info("CFQ7TTC0P85B,CFQ7TTC0HX8W,CFQ7TTC0QH5H,CFQ7TTC0KGQ8,CFQ7TTC0KHS0");
 # get_info("BVZ4H08BMQ3H");	# Rockstar Table Tennis
+# exit;
 
 get_channels();
 
@@ -146,6 +147,17 @@ sub get_info {
 			$coder->encode($attributes), $coder->encode($relprods),$xbox360, $titleid)
 				|| die;
 
+		# Reading UsageData
+		foreach $mp (@{$pr->{MarketProperties}->[0]->{UsageData}}) {
+
+			my $timespan = $mp->{AggregateTimeSpan};
+			my $rating   = $mp->{AverageRating};
+			my $ratecnt  = $mp->{RatingCount};
+
+			$dbh->do('insert into usagedata(usagedate,bigid,timespan,rating,ratecnt) values(now()::date,$1,$2,$3,$4)
+				on conflict(usagedate,bigid,timespan) do update set rating=$3,ratecnt=$4', undef, $bigid, $timespan, $rating, $ratecnt);
+
+		}
 
 		# Reading actual SKUs
 		$dbh->do('delete from skus where bigid=$1', undef, $bigid);
