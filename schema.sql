@@ -54,6 +54,21 @@ CREATE TABLE public.exrates (
 
 
 --
+-- Name: images; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.images (
+    width integer,
+    height integer,
+    filesize integer,
+    bigid text,
+    purpose text,
+    uri text,
+    "position" text
+);
+
+
+--
 -- Name: pricehistory; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -158,6 +173,13 @@ CREATE UNIQUE INDEX exrates_exdate_region_idx ON public.exrates USING btree (exd
 
 
 --
+-- Name: images_bigid_purpose_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX images_bigid_purpose_idx ON public.images USING btree (bigid, purpose);
+
+
+--
 -- Name: pricehistory_bigid_skuid_region_remid_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -186,6 +208,13 @@ CREATE UNIQUE INDEX products_bigid_idx ON public.products USING btree (bigid);
 
 
 --
+-- Name: products_titleid_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX products_titleid_idx ON public.products USING btree (titleid);
+
+
+--
 -- Name: skus_bigid_skuid_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -204,6 +233,13 @@ CREATE INDEX usagedata_bigid_idx ON public.usagedata USING btree (bigid);
 --
 
 CREATE UNIQUE INDEX usagedata_usagedate_bigid_timespan_idx1 ON public.usagedata USING btree (usagedate DESC, bigid, timespan);
+
+
+--
+-- Name: images images_min_update; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER images_min_update BEFORE UPDATE ON public.images FOR EACH ROW EXECUTE FUNCTION suppress_redundant_updates_trigger();
 
 
 --
