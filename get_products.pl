@@ -24,6 +24,8 @@ my $coder = Cpanel::JSON::XS->new->allow_nonref;
 # get_info("9MTLKM2DJMZ2");		# Forza Horizon 5 Premium Edition
 # get_info("CFQ7TTC0P85B,CFQ7TTC0HX8W,CFQ7TTC0QH5H,CFQ7TTC0KGQ8,CFQ7TTC0KHS0");
 # get_info("BVZ4H08BMQ3H");	# Rockstar Table Tennis
+# get_info('C54XLS381SXJ');
+# get_info('C5FVH1MHKL4W');
 # exit;
 
 get_channels();
@@ -172,6 +174,24 @@ sub get_info {
 					on conflict(usagedate,bigid,timespan) do update set rating=$3,ratecnt=$4', undef, $bigid, $timespan, $rating, $ratecnt);
 
 			}
+
+		}
+
+		# Reading images
+		foreach $img (@{$pr->{LocalizedProperties}->[0]->{Images}}) {
+
+			my $width  = $img->{Width};
+			my $height = $img->{Height};
+			my $fsize  = $img->{FileSizeInBytes};
+			my $purp   = $img->{ImagePurpose};
+			my $uri    = $img->{Uri};
+			my $posit  = $img->{ImagePositionInfo};
+
+			$posit = "" if not defined $posit;
+
+			$dbh->do('insert into images(width,height,filesize,bigid,purpose,uri,position) values($1,$2,$3,$4,$5,$6,$7) 
+				on conflict(bigid,purpose) do update set width=$1,height=$2,filesize=$3,uri=$6,position=$7', undef,
+				$width, $height, $fsize, $bigid, $purp, $uri, $posit);
 
 		}
 
